@@ -1,4 +1,4 @@
-package com.meyling.hudson.plugin.job_exporter;
+package com.meyling.hudson.plugin.job_exporter_long;
 
 import hudson.EnvVars;
 import hudson.Extension;
@@ -80,9 +80,12 @@ public class ExporterBuilder extends Builder {
             put(listener, export, "hudson.version", build.getHudsonVersion());
             put(listener, export, "host", Computer.currentComputer().getHostName());
             put(listener, export, "id", build.getId());
-            put(listener, export, "duration", build.getTimestampString());
+            put(listener, export, "duration", ""+(build.getDuration()>0?
+                    build.getDuration():System.currentTimeMillis()-build.getTimeInMillis()));
             put(listener, export, "slave", build.getBuiltOnStr());
-            put(listener, export, "started", DateFormatUtils.ISO_DATETIME_FORMAT.format(build.getTimestamp()));
+            put(listener, export, "started", ""+build.getTimeInMillis());
+            put(listener, export, "url", ""+build.getUrl());
+            put(listener, export, "status.url", ""+build.getBuildStatusUrl());
             put(listener, export, "result", Result.SUCCESS.toString()); // set default
             if (build.getResult() != null) {
                 put(listener, export, "result", build.getResult().toString());
@@ -258,7 +261,7 @@ public class ExporterBuilder extends Builder {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "export job runtime parameters";
+            return "export job runtime parameters in long type";
         }
 
         @Override
